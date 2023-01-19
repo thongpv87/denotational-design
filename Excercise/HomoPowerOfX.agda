@@ -109,12 +109,13 @@ record MonoidH
     {M N : Set} (eₘ : M) (_∙ₘ_ : M → M → M)
     (eₙ : N) (_∙ₙ_ : N → N → N)
     (f : M → N)
-    ⦃ _ : Monoid eₘ _∙ₘ_ ⦄
-    ⦃ _ : Monoid eₙ _∙ₙ_ ⦄
-    : Set where
+  : Set where
   field
     P-∙ : ∀ (a b : M) → f (a ∙ₘ b) ≡ f a ∙ₙ f b
     P-id : f eₘ ≡ eₙ
+    ⦃ monoidₘ ⦄ : Monoid eₘ _∙ₘ_
+    ⦃ monoidₙ ⦄ : Monoid eₙ _∙ₙ_
+open MonoidH ⦃ ... ⦄
 
 
 infixr 8 _^_
@@ -129,12 +130,17 @@ m ^ suc n = m * (m ^ n)
    | sym (*-assoc x (x ^ a) (x ^ b))
    = refl
 
+
 instance
   x^-MonoidH-ℕ+-ℕ* : ∀ {x : ℕ} → MonoidH 0 _+_ 1 _*_ (x ^_)
-  x^-MonoidH-ℕ+-ℕ* {x} = record
-    { P-∙ = λ a b → ^-distribˡ-+-* x a b
-    ; P-id = refl
-    }
+  P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ zero b = trans (sym (∙-identityʳ (x ^ b))) refl
+  P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ (suc a) b
+    rewrite P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ a b
+    | sym (∙-assoc ⦃ ℕ*-monoid ⦄ x (x ^ a) (x ^ b))
+    = refl
+  P-id ⦃ x^-MonoidH-ℕ+-ℕ* ⦄ = refl
+  monoidₘ ⦃ x^-MonoidH-ℕ+-ℕ* ⦄ = ℕ+-monoid
+  monoidₙ ⦃ x^-MonoidH-ℕ+-ℕ* ⦄ = ℕ*-monoid
 
 
 -- *** Prove that x ^_ is semiring homomorphism
