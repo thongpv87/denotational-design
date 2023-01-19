@@ -2,9 +2,10 @@ import Relation.Binary.PropositionalEquality as Eq
 open Eq using (_≡_; refl; sym; trans; cong; cong-app)
 open Eq.≡-Reasoning
 
-
--- *** Prove that x ^_ is a monoid homomorphism
-
+--------------------------------------------------------
+-- Prove that x ^_ is a monoid homomorphism
+--------------------------------------------------------
+--
 -- What's a monoid in Set? Given a set S, an element e ∈ S and a binary operation (_∙_) : S → S → S, (S, _∙_ , e) a monoid it satisfies following laws:
 --   - associativity:  (a ∙ b) ∙ c = a ∙ (b ∙ c)
 --   - left identity: e ∙ a = a
@@ -133,19 +134,16 @@ m ^ suc n = m * (m ^ n)
 
 instance
   x^-MonoidH-ℕ+-ℕ* : ∀ {x : ℕ} → MonoidH 0 _+_ 1 _*_ (x ^_)
-  P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ zero b = trans (sym (∙-identityʳ (x ^ b))) refl
+  P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ zero b = trans (sym (∙-identityʳ (x ^ b))) refl -- FIXME: Why does this doesn't requires explicit passing instance
   P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ (suc a) b
     rewrite P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ a b
-    | sym (∙-assoc ⦃ ℕ*-monoid ⦄ x (x ^ a) (x ^ b))
+    | sym (∙-assoc ⦃ ℕ*-monoid ⦄ x (x ^ a) (x ^ b)) -- FIXME: And this requires?
     = refl
   P-id ⦃ x^-MonoidH-ℕ+-ℕ* ⦄ = refl
-  monoidₘ ⦃ x^-MonoidH-ℕ+-ℕ* ⦄ = ℕ+-monoid
-  monoidₙ ⦃ x^-MonoidH-ℕ+-ℕ* ⦄ = ℕ*-monoid
 
-
--- *** Prove that x ^_ is semiring homomorphism
--- We need proving extra natural functions properties to prove this
-
+-------------------------------------------------------------------
+--  Prove that (x ^_) is commutative monoid morphism
+-------------------------------------------------------------------
 +-suc-swap : ∀ (m n : ℕ) → suc m + n ≡ m + suc n
 +-suc-swap zero n = refl
 +-suc-swap (suc m) n rewrite +-suc-swap m n = refl
@@ -175,18 +173,10 @@ instance
   | +-assoc m n (n * m)
   = refl
 
-*-distribˡ-+ : ∀ (m n p : ℕ) → m * (n + p) ≡ m * n + m * p
-*-distribˡ-+ m n p
-  rewrite *-comm m (n + p)
-  | *-distribʳ-+ n p m
-  | *-comm n m
-  | *-comm p m
-  = refl
-
-
-record CommMonoid {A : Set} (e : A) (_∙_ : A → A → A) ⦃ _ : Monoid e _∙_ ⦄ : Set where
+record CommMonoid {A : Set} (e : A) (_∙_ : A → A → A) : Set where
   field
    ∙-comm : ∀ (a b : A) → a ∙ b ≡ b ∙ a
+   ⦃ monoid ⦄ : Monoid e _∙_
 open CommMonoid ⦃ ... ⦄ public
 
 instance
@@ -199,6 +189,39 @@ instance
     { ∙-comm = *-comm
     }
 
+record CommMonoidH
+    {M N : Set} (eₘ : M) (_∙ₘ_ : M → M → M)
+    (eₙ : N) (_∙ₙ_ : N → N → N)
+    (f : M → N)
+  : Set where
+  field
+    P-comm : ∀ (a b : M) → f (a ∙ₘ b) ≡ f (b ∙ₘ a)
+    ⦃ comm-monoidₘ ⦄ : CommMonoid eₘ _∙ₘ_
+    ⦃ comm-monoidₙ ⦄ : CommMonoid eₙ _∙ₙ_
+    ⦃ monoidH ⦄ : MonoidH eₘ _∙ₘ_ eₙ _∙ₙ_ f
+open CommMonoidH ⦃ ... ⦄
+
+instance
+  x^-CommMonoidH-ℕ+-ℕ* : ∀ {x : ℕ} → CommMonoidH 0 _+_ 1 _*_ (x ^_)
+  P-comm ⦃ x^-CommMonoidH-ℕ+-ℕ* {x} ⦄ a b
+    rewrite ∙-comm ⦃ +-CommMonoid ⦄ a b
+    = refl
+
+
+-------------------------------------------------------------------------
+-- Prove that x ^_ is semiring homomorphism
+-------------------------------------------------------------------------
+-- We need proving extra natural functions properties to prove this
+
+*-distribˡ-+ : ∀ (m n p : ℕ) → m * (n + p) ≡ m * n + m * p
+*-distribˡ-+ m n p
+  rewrite *-comm m (n + p)
+  | *-distribʳ-+ n p m
+  | *-comm n m
+  | *-comm p m
+  = refl
+
+
 instance
   ^-Monoid : Monoid 1 _^_
   ^-Monoid = record
@@ -208,7 +231,6 @@ instance
     }
 
 record Semiring {A : Set} (i : A) (_+_ : A → A → A) (e : A) (_*_ : A → A → A)
-  ⦃ _ : Monoid i _+_ ⦄ -- FIXME: CommMonoid included Monoid constraint, how can I remove this?
   ⦃ _ : CommMonoid i _+_ ⦄
   ⦃ _ : Monoid e _*_ ⦄
   : Set where
