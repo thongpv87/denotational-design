@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>WhyMonoidHRequireMonoidConstraint2</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style type="text/css">blockquote p::before{
+content: "";
+display: block;
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+width: 4px;
+border-radius: 8px;
+background: #c8ccd0;
+}
+blockquote{
+color:#535a60;
+padding:.8em .8em .8em 1em;
+position: relative;
+}
+</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<p>Dear Conal,</p>
+<blockquote>
+<p>I think you are trying to argue that the existence of a raw monoid
+homomorphism from a (law-abiding) monoid does not imply that the
+homomorphism’s target obeys the monoid laws. Am I accurately
+understanding the nature of your claim?</p>
+</blockquote>
+<p>Yes, that’s exactly what I was trying to prove.</p>
+<blockquote>
+<p>I think the shape of your argument here (leading to the third bullet
+point above) is that if P ⇒ Q then ¬ P ⇒ ¬ Q, which you probably realize
+is not generally valid. (Not all sufficient conditions are necessary
+conditions.)</p>
+</blockquote>
+<p>Thank you for pointed that out. Now I see the error with my
+proof.</p>
+<blockquote>
+<p>Is your claim above somehow related to a purpose you see being served
+by including the Monoid constraints in the MonoidH class (and similarly
+for CommMonoidH)?</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>In your CommMonoidH class, what purpose is served by
+the P-comm, comm-monoidₘ and comm-monoidₙ fields? In other words, what
+value would be lost if you eliminated them? Likewise, in
+your MonoidH class, what purpose is served by the third and fourth
+fields (monoidₘ and monoidₙ)?</p>
+</blockquote>
+</blockquote>
+<p>Because you asked <em>“what value would be lost if you eliminated
+them?”</em>, I want to show that without <code>Monoid</code> constraints
+in <code>MonoidH</code> or similarly with <code>CommMonoidH</code>, the
+homomorphisms would <em>not</em> be the morphisms that preserve
+(monoid/communicative monoid) structure. That’s why I need to include it
+in the definition of those homomorphisms.</p>
+<p>I apologize if there was any confusion caused by my misunderstanding
+of your request or if my English is not clear. As a non-native speaker,
+I sometimes or struggle to express myself clearly in writing.</p>
+<p>Sincerely,</p>
+<p>Thong</p>
+</body>
+</html>

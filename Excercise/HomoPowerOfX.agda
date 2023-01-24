@@ -97,6 +97,7 @@ instance
     ; ∙-assoc = +-assoc
     }
 
+
 -- proof that (ℕ, _*_ , 1) is monoid
 instance
   ℕ*-monoid : Monoid 1 _*_
@@ -105,6 +106,7 @@ instance
     ; ∙-identityˡ = *-identityˡ
     ; ∙-assoc = *-assoc
     }
+
 
 record MonoidH
     {M N : Set} (eₘ : M) (_∙ₘ_ : M → M → M)
@@ -124,21 +126,16 @@ _^_ : ℕ → ℕ → ℕ
 m ^ zero = 1
 m ^ suc n = m * (m ^ n)
 
-^-distribˡ-+-* : ∀ (x a b : ℕ) → x ^ (a + b) ≡ x ^ a * x ^ b
-^-distribˡ-+-* x zero b rewrite +-identityʳ (x ^ b) = refl
-^-distribˡ-+-* x (suc a) b
-   rewrite ^-distribˡ-+-* x a b
-   | sym (*-assoc x (x ^ a) (x ^ b))
-   = refl
-
 
 instance
   x^-MonoidH-ℕ+-ℕ* : ∀ {x : ℕ} → MonoidH 0 _+_ 1 _*_ (x ^_)
   P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ zero b = trans (sym (∙-identityʳ (x ^ b))) refl -- FIXME: Why does this doesn't requires explicit passing instance
+
   P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ (suc a) b
     rewrite P-∙ ⦃ x^-MonoidH-ℕ+-ℕ* {x} ⦄ a b
     | sym (∙-assoc ⦃ ℕ*-monoid ⦄ x (x ^ a) (x ^ b)) -- FIXME: And this requires?
     = refl
+
   P-id ⦃ x^-MonoidH-ℕ+-ℕ* ⦄ = refl
 
 -------------------------------------------------------------------
@@ -173,110 +170,36 @@ instance
   | +-assoc m n (n * m)
   = refl
 
-record CommMonoid {A : Set} (e : A) (_∙_ : A → A → A) : Set where
-  field
-   ∙-comm : ∀ (a b : A) → a ∙ b ≡ b ∙ a
-   ⦃ monoid ⦄ : Monoid e _∙_
-open CommMonoid ⦃ ... ⦄ public
-
-instance
-  +-CommMonoid : CommMonoid 0 _+_
-  +-CommMonoid = record
-    { ∙-comm = +-comm
-    }
-  *-CommMonoid : CommMonoid 1 _*_
-  *-CommMonoid = record
-    { ∙-comm = *-comm
-    }
-
-record CommMonoidH
-    {M N : Set} (eₘ : M) (_∙ₘ_ : M → M → M)
-    (eₙ : N) (_∙ₙ_ : N → N → N)
-    (f : M → N)
-  : Set where
-  field
-    P-comm : ∀ (a b : M) → f (a ∙ₘ b) ≡ f (b ∙ₘ a)
-    ⦃ comm-monoidₘ ⦄ : CommMonoid eₘ _∙ₘ_
-    ⦃ comm-monoidₙ ⦄ : CommMonoid eₙ _∙ₙ_
-    ⦃ monoidH ⦄ : MonoidH eₘ _∙ₘ_ eₙ _∙ₙ_ f
-open CommMonoidH ⦃ ... ⦄
-
-instance
-  x^-CommMonoidH-ℕ+-ℕ* : ∀ {x : ℕ} → CommMonoidH 0 _+_ 1 _*_ (x ^_)
-  P-comm ⦃ x^-CommMonoidH-ℕ+-ℕ* {x} ⦄ a b
-    rewrite ∙-comm ⦃ +-CommMonoid ⦄ a b
-    = refl
-
-
--------------------------------------------------------------------------
--- Prove that x ^_ is semiring homomorphism
--------------------------------------------------------------------------
--- We need proving extra natural functions properties to prove this
-
-*-distribˡ-+ : ∀ (m n p : ℕ) → m * (n + p) ≡ m * n + m * p
-*-distribˡ-+ m n p
-  rewrite *-comm m (n + p)
-  | *-distribʳ-+ n p m
-  | *-comm n m
-  | *-comm p m
-  = refl
-
-
-instance
-  ^-Monoid : Monoid 1 _^_
-  ^-Monoid = record
-    { ∙-identityʳ = {!!}
-    ; ∙-identityˡ = {!!}
-    ; ∙-assoc = {!!}
-    }
-
-record Semiring {A : Set} (i : A) (_+_ : A → A → A) (e : A) (_*_ : A → A → A)
-  ⦃ _ : CommMonoid i _+_ ⦄
-  ⦃ _ : Monoid e _*_ ⦄
-  : Set where
-  field
-    semiring-distribʳ : ∀ (m n p : A) → ((m + n) * p) ≡ ((m * p) + (n * p))
-    semiring-distribˡ : ∀ (m n p : A) → m * (n + p) ≡ (m * n) + (m * p)
-    semiring-zeroʳ : ∀ (m : A) → m * i ≡ i
-    semiring-zeroˡ : ∀ (m : A) → i * m ≡ i
-open Semiring ⦃ ... ⦄ public
-
-instance
-  +-*-Semiring : Semiring 0 _+_ 1 _*_
-  +-*-Semiring = record
-    { semiring-distribʳ = *-distribʳ-+
-    ; semiring-distribˡ = *-distribˡ-+
-    ; semiring-zeroʳ = *-zeroʳ
-    ; semiring-zeroˡ = *-zeroˡ
-    }
-
-record SemiringH
-    {M N : Set}
-    (iₘ : M) (_+ₘ_ : M → M → M)
-    (eₘ : M) (_*ₘ_ : M → M → M)
-    (iₙ : N) (_+ₙ_ : N → N → N)
-    (eₙ : N) (_*ₙ_ : N → N → N)
-    (f : M → N)
-    ⦃ _ : Monoid iₘ _+ₘ_ ⦄
-    ⦃ _ : CommMonoid iₘ _+ₘ_ ⦄
-    ⦃ _ : Monoid eₘ _*ₘ_ ⦄
-    ⦃ _ : Semiring iₘ _+ₘ_ eₘ _*ₘ_ ⦄
-    ⦃ _ : Monoid iₙ _+ₙ_ ⦄
-    ⦃ _ : CommMonoid iₙ _+ₙ_ ⦄
-    ⦃ _ : Monoid eₙ _*ₙ_ ⦄
-    ⦃ _ : Semiring iₙ _+ₙ_ eₙ _*ₙ_ ⦄
-    : Set where
-  field
-    semiring-+-P : ∀ (a b : M) → f (a +ₘ b) ≡ f a +ₙ f b
-    semiring-*-P : ∀ (a b : M) → f (a *ₘ b) ≡ f a *ₙ f b
-    semiring-i-P : f iₘ ≡ iₙ
-    semiring-e-P : f eₘ ≡ eₙ
+-- record CommMonoid {A : Set} (e : A) (_∙_ : A → A → A) : Set where
+--   field
+--    ∙-comm : ∀ (a b : A) → a ∙ b ≡ b ∙ a
+--    ⦃ monoid ⦄ : Monoid e _∙_
+-- open CommMonoid ⦃ ... ⦄ public
 
 -- instance
---   x^-SemiringH-ℕ+*-ℕ*^ : ∀ {x : ℕ} → SemiringH 0 _+_ 1 _*_ 1 _*_ 1 _^_ (x ^_)
---   x^-SemiringH-ℕ+*-ℕ*^ {x} = record
---     { semiring-+-P = ?
---     ; semiring-*-P = {!!}
---     ; semiring-i-P = {!!}
---     ; semiring-e-P = {!!}
+--   +-CommMonoid : CommMonoid 0 _+_
+--   +-CommMonoid = record
+--     { ∙-comm = +-comm
 --     }
+--   *-CommMonoid : CommMonoid 1 _*_
+--   *-CommMonoid = record
+--     { ∙-comm = *-comm
+--     }
+
+-- record CommMonoidH
+--     {M N : Set} (eₘ : M) (_∙ₘ_ : M → M → M)
+--     (eₙ : N) (_∙ₙ_ : N → N → N)
+--     (f : M → N)
+--   : Set where
+--   field
+--     P-comm : ∀ (a b : M) → f (a ∙ₘ b) ≡ f (b ∙ₘ a)
+--     -- ⦃ comm-monoidₘ ⦄ : CommMonoid eₘ _∙ₘ_
+--     -- ⦃ comm-monoidₙ ⦄ : CommMonoid eₙ _∙ₙ_
+--     ⦃ monoidH ⦄ : MonoidH eₘ _∙ₘ_ eₙ _∙ₙ_ f
+-- open CommMonoidH ⦃ ... ⦄
+
+-- instance
+--   x^-CommMonoidH-ℕ+-ℕ* : ∀ {x : ℕ} → CommMonoidH 0 _+_ 1 _*_ (x ^_)
+--   P-comm ⦃ x^-CommMonoidH-ℕ+-ℕ* {x} ⦄ a b
+--     rewrite ∙-comm ⦃ +-CommMonoid ⦄ a b
+--     = refl
