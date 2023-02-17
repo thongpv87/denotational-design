@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2023-02-13-generalized-homomorphism</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style type="text/css">
+html {
+font-size: 100%;
+overflow-y: scroll;
+-webkit-text-size-adjust: 100%;
+-ms-text-size-adjust: 100%;
+}
+body {
+color: #444;
+font-family: Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
+font-size: 12px;
+line-height: 1.7;
+padding: 1em;
+margin: auto;
+max-width: 42em;
+background: #fefefe;
+}
+a {
+color: #0645ad;
+text-decoration: none;
+}
+a:visited {
+color: #0b0080;
+}
+a:hover {
+color: #06e;
+}
+a:active {
+color: #faa700;
+}
+a:focus {
+outline: thin dotted;
+}
+*::-moz-selection {
+background: rgba(255, 255, 0, 0.3);
+color: #000;
+}
+*::selection {
+background: rgba(255, 255, 0, 0.3);
+color: #000;
+}
+a::-moz-selection {
+background: rgba(255, 255, 0, 0.3);
+color: #0645ad;
+}
+a::selection {
+background: rgba(255, 255, 0, 0.3);
+color: #0645ad;
+}
+p {
+margin: 1em 0;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+color: #111;
+line-height: 125%;
+margin-top: 2em;
+font-weight: normal;
+}
+h4, h5, h6 {
+font-weight: bold;
+}
+h1 {
+font-size: 2.5em;
+}
+h2 {
+font-size: 2em;
+}
+h3 {
+font-size: 1.5em;
+}
+h4 {
+font-size: 1.2em;
+}
+h5 {
+font-size: 1em;
+}
+h6 {
+font-size: 0.9em;
+}
+blockquote {
+color: #666666;
+margin: 0;
+padding-left: 3em;
+border-left: 0.5em #EEE solid;
+}
+hr {
+display: block;
+height: 2px;
+border: 0;
+border-top: 1px solid #aaa;
+border-bottom: 1px solid #eee;
+margin: 1em 0;
+padding: 0;
+}
+pre, code, kbd, samp {
+color: #000;
+font-family: monospace, monospace;
+_font-family: 'courier new', monospace;
+font-size: 0.98em;
+}
+pre {
+white-space: pre;
+white-space: pre-wrap;
+word-wrap: break-word;
+}
+b, strong {
+font-weight: bold;
+}
+dfn {
+font-style: italic;
+}
+ins {
+background: #ff9;
+color: #000;
+text-decoration: none;
+}
+mark {
+background: #ff0;
+color: #000;
+font-style: italic;
+font-weight: bold;
+}
+sub, sup {
+font-size: 75%;
+line-height: 0;
+position: relative;
+vertical-align: baseline;
+}
+sup {
+top: -0.5em;
+}
+sub {
+bottom: -0.25em;
+}
+ul, ol {
+margin: 1em 0;
+padding: 0 0 0 2em;
+}
+li p:last-child {
+margin-bottom: 0;
+}
+ul ul, ol ol {
+margin: .3em 0;
+}
+dl {
+margin-bottom: 1em;
+}
+dt {
+font-weight: bold;
+margin-bottom: .8em;
+}
+dd {
+margin: 0 0 .8em 2em;
+}
+dd:last-child {
+margin-bottom: 0;
+}
+img {
+border: 0;
+-ms-interpolation-mode: bicubic;
+vertical-align: middle;
+}
+figure {
+display: block;
+text-align: center;
+margin: 1em 0;
+}
+figure img {
+border: none;
+margin: 0 auto;
+}
+figcaption {
+font-size: 0.8em;
+font-style: italic;
+margin: 0 0 .8em;
+}
+table {
+margin-bottom: 2em;
+border-bottom: 1px solid #ddd;
+border-right: 1px solid #ddd;
+border-spacing: 0;
+border-collapse: collapse;
+}
+table th {
+padding: .2em 1em;
+background-color: #eee;
+border-top: 1px solid #ddd;
+border-left: 1px solid #ddd;
+}
+table td {
+padding: .2em 1em;
+border-top: 1px solid #ddd;
+border-left: 1px solid #ddd;
+vertical-align: top;
+}
+.author {
+font-size: 1.2em;
+text-align: center;
+}
+@media only screen and (min-width: 480px) {
+body {
+font-size: 14px;
+}
+}
+@media only screen and (min-width: 768px) {
+body {
+font-size: 16px;
+}
+}
+@media print {
+* {
+background: transparent !important;
+color: black !important;
+filter: none !important;
+-ms-filter: none !important;
+}
+body {
+font-size: 12pt;
+max-width: 100%;
+}
+a, a:visited {
+text-decoration: underline;
+}
+hr {
+height: 1px;
+border: 0;
+border-bottom: 1px solid black;
+}
+a[href]:after {
+content: " (" attr(href) ")";
+}
+abbr[title]:after {
+content: " (" attr(title) ")";
+}
+.ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
+content: "";
+}
+pre, blockquote {
+border: 1px solid #999;
+padding-right: 1em;
+page-break-inside: avoid;
+}
+tr, img {
+page-break-inside: avoid;
+}
+img {
+max-width: 100% !important;
+}
+@page :left {
+margin: 15mm 20mm 15mm 10mm;
+}
+@page :right {
+margin: 15mm 10mm 15mm 20mm;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3 {
+page-break-after: avoid;
+}
+}
+</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<p>Dear Conal,</p>
+<p>I’m still working on implementing the injection/surjection
+definition, and I hope to have it finished within the next few days. I
+have been lost in the rabbit hole with set theory and type theory docs.
+I’ve learned a fews things and also realized that I had some
+misconception.</p>
+<p>Although I had heard of type theory before, I had never really
+studied it in depth. My understanding of types primarily came from my
+experience with programming languages like Haskell and Agda. I have been
+thinking in set theory while working with type theory in Agda and now I
+realized that while they have many correspondences, they are different.
+I haven’t read too much about type theory because I’m afraid I may fall
+into another rabbit hole. <em>Please let me know if I’m mistaken about
+any of the following, or if there are any other common misconceptions
+you think I should be aware of</em>:</p>
+<ul>
+<li><code>x : A ≠ x ∈ A</code>
+<ul>
+<li><code>x : A</code> in type theory is a <em>judgment</em>, state that
+<code>x</code> belong to type <code>A</code>. We can <em>not</em> negate
+it. In type theory, an element can only belong to one type.</li>
+<li><code>x ∈ A</code> in set theory is a <em>proposition</em>. In state
+that <code>x</code> belong to <code>A</code>, that may or may not true.
+We can assume or negate the proposition. In set theory, an element may
+belong to many set</li>
+</ul></li>
+<li>Operations on Set (such as <code>∪</code> <code>∩</code> ͏
+<code>⊆</code> <code>⊂</code>) behave different with their type
+operation correspondences
+<ul>
+<li>Operations on set are <em>intensional</em>, it behavior depends on
+intensional properties of object
+<ul>
+<li><code>{a, b} ≃ {c , d}</code> but
+<code>{a , b} ∪ {a} ≄ {c , d} ∪ {a}</code></li>
+</ul></li>
+<li>Operation on type (such as <code>→</code> <code>×</code>
+<code>⊎</code>) are <em>extensional</em>, their behavior is
+<em>independent</em> on the choice of interpretation
+<ul>
+<li><code>(a × b) ≃ (c × d)</code> and
+<code>(a × b) ⊎ a ≃ (c × d) ⊎ a</code></li>
+</ul></li>
+</ul></li>
+<li>Function in set theory is <em>set of pairs</em>, it does not need to
+be computable.</li>
+<li>Function in type theory is primitive concept. A function that
+doesn’t <em>function</em> shouldn’t be called a function.
+<ul>
+<li>I’m not sure if the function that doesn’t function only related to
+the function that never return, or it also related to other kind of
+function in programming?</li>
+<li>This make me think that most of function definition in main stream
+programming languages are not actually <em>function</em></li>
+</ul></li>
+<li>In set theory, we using predicate logic to express the axioms</li>
+<li>In type theory, we can define it by using function type to represent
+them. Ex: a relation between <code>A</code> and <code>B</code> is
+<code>A → B → Prop</code>
+<ul>
+<li>Is <code>Prop</code> has all inhabitants definitionally equal in all
+variants of type theory?</li>
+</ul></li>
+<li>Structuralism: We can distinguish different encodings of natural
+numbers (or the same mathematical object) in set theory but not in type
+theory.
+<ul>
+<li>I think this is very important property of type theory since it
+protect us from <em>abstraction leak</em></li>
+<li>I think this may also have many interesting relation in
+philosophy.</li>
+</ul></li>
+</ul>
+<p>I’ve also discovered some knowledge in type theory:</p>
+<ul>
+<li><em>Aware</em> of <a href="https://ncatlab.org/nlab/show/natural+deduction">natural
+deduction</a> frame work.</li>
+<li>There are many kind of equality in type theory: <em>judgment
+equality</em>, <em>definitionally equal</em>, <em>propositionally
+equal</em>, <em>typal equality</em>,…
+<ul>
+<li>As my understanding, definitionally equal is best explain in <a href="https://ncatlab.org/nlab/show/definitional+equality#idea">this</a>.
+It’s like they have defined by equivalent syntax.</li>
+<li>Propositionally equal is <code>≡</code> that we use in Agda. It’s
+just a <em>binary relation</em> that has <em>symmetric</em>,
+<em>reflective</em>, and <em>transitive</em> properties</li>
+<li>I haven’t read about other equalities</li>
+</ul></li>
+<li>If Martin-Löf type theory that has <em>propositionally equal</em>
+implies <em>definitionally equal</em>, it’s an extensional type theory,
+otherwise it’s an intensional type theory. Extensional Martin-Löf type
+theory does not have decidable type checking
+<ul>
+<li>Definitionally equal <em>implies</em> propositionally equal because
+of <em>reflective</em> property of propositionally equal</li>
+</ul></li>
+<li>It’s useful to think proposition as evidence in type theory rather
+than proposition and truth in classical logic</li>
+</ul>
+<p><em>I also have some questions about certain important concepts that
+I haven’t fully understood yet</em>:</p>
+<ul>
+<li><a href="https://ncatlab.org/nlab/show/identity+type">Identity
+type</a> it’s definition is quite complicated to me to understand.
+What’s relation/different between identity type and equality
+relation?</li>
+<li><strong>There are different variants of Martin-Löf dependent type
+theory. How do we categorize the type theory that we are studying?
+What’s main distinction from other variants</strong>
+<ul>
+<li>Are we studying default type theory of Agda? Does that include Axiom
+K?</li>
+<li>There are different <a href="https://ncatlab.org/nlab/show/Martin-L%C3%B6f+dependent+type+theory#formal_presentations">formal
+representation</a> of Martin-Löf dependent type theory, I wonder which
+is the representation for the type theory. What’s the main distinction
+between these representations or they are just
+<em>isomorphism</em>?</li>
+<li>I think the type theory can also be categorized as <a href="https://ncatlab.org/nlab/show/set-level+type+theory#idea"><em>Intensional
+set level type theory</em></a>.
+<ul>
+<li>If that’s true then I think one of the most important characteristic
+of the type theory as stated in the article is the distinction between
+definitionally equal and propositionally equal, and no two terms can be
+propositionally equal in more than one way (up to propositional
+equality).</li>
+</ul></li>
+<li>Does it has any additional axiom?</li>
+</ul></li>
+</ul>
+<p>Many thanks,</p>
+<p>Thông</p>
+</body>
+</html>
