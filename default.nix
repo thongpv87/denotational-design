@@ -39,5 +39,6 @@ pkgs.stdenv.mkDerivation rec {
   env = pkgs.buildEnv {
     name = name;
     paths = buildInputs;
+    buildInputs = with pkgs; [ pandoc pdf2svg ];
   };
 }
